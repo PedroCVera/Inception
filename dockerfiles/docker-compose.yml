@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  nginx:
+    hostname: pcoimbra.42.fr
+    container_name: pcoimbra_nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nginx
+    restart: always
+    volumes:
+      - wp:/var/www/html
+    ports:
+      - '443:443'
+    networks:
+      - inception
+
+  wordpress:
+    container_name: pcoimbra_wordpress
+    build:
+      context: ./wordpress
+      dockerfile: Dockerfile
+    image: wordpress
+    restart: always
+    volumes:
+    - wp:/var/www/html
+    env_file:
+    - .env
+    networks:
+    - inception  
+
+  mariadb:
+    container_name: pcoimbra_mariadb
+    build:
+      context: mariadb
+      dockerfile: Dockerfile
+    image: mariadb
+    expose:
+     - 3306
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - inception
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  wp:
+    name: wp
+    driver: local
+    driver_opts:
+      device: /home/inception/data
+      o: bind
+      type: none
+    
+  db:
+    name: db
+    driver: local
+    driver_opts:
+      device: /home/inception/data
+      o: bind
+      type: none
