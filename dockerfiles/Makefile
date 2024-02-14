@@ -9,3 +9,5 @@ up:
 
 down:
 	${DOCKER_COMPOSE} down
+
+PHONY: build up down

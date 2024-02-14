@@ -7,12 +7,16 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+    depends_on:
+      - wordpress
     image: nginx
     restart: always
     volumes:
       - wp:/var/www/html
+    env_file:
+      - .env
     ports:
-      - '443:443'
+      - "443:443"
     networks:
       - inception
 
@@ -24,11 +28,11 @@ services:
     image: wordpress
     restart: always
     volumes:
-    - wp:/var/www/html
+      - wp:/var/www/html
     env_file:
-    - .env
+      - .env
     networks:
-    - inception  
+      - inception  
 
   mariadb:
     container_name: pcoimbra_mariadb
@@ -37,7 +41,7 @@ services:
       dockerfile: Dockerfile
     image: mariadb
     expose:
-     - 3306
+      - 3306
     restart: always
     volumes:
       - db:/var/lib/mysql
