@@ -1,38 +1,31 @@
 #!/bin/bash
 
-if [ -d "/var/www/html/wordpress/wp-admin" ]; then
-	echo "Wordpress already installed"
-else
-	echo "Wordpress installation"
-	wget -q -O /tmp/wordpress.tar.gz https://wordpress.org/wordpress-6.1.3.tar.gz
+sleep 5
 
-	tar -xzf /tmp/wordpress.tar.gz -C /tmp
+# Download do wordpress para o /var/www/html
+if [ ! -f "/var/www/html/wp-config.php" ]; then
+	if cd /var/www/html && wp core download --allow-root
 
-	mkdir -p /var/www/html/wordpress
-
-	mv /tmp/wordpress/* /var/www/html/wordpress
-
+	then
+	wp config create --allow-root \
+		--path=/var/www/html/ \
+		--dbname=$DB_NAME \
+		--dbuser=$DB_ADMIN \
+		--dbpass=$DB_PASS \
+		--dbhost=$DB_HOST \
+		&& \
+		wp core install \
+		--allow-root \
+		--title=$WP_TITLE \
+		--admin_user=$WP_ADMIN \
+		--admin_password=$WP_ADMIN_PASS \
+		--admin_email=$WP_ADMIN_EMAIL \
+		--url=$WP_URL \
+		&& \
+		wp user create \
+		--allow-root \
+		$WP_USER $WP_USER_EMAIL --user_pass=$WP_USER_PASS
+	fi
 fi
-
-chown -R www-data.www-data /var/www/html/wordpress
-chmod -R 755 /var/www/html/wordpress
-
-service php7.4-fpm start
-
-sleep 2
-
-wget -q -O /usr/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x /usr/bin/wp
-
-if [ -f "/var/www/html/wordpress/wp-config.php" ]; then
-	echo "Wordpress already configured"
-else
-
-	echo "Wordpress configuration"
-
-	wp --allow-root --path=/var/www/html/wordpress core config --dbhost=rdas-nev_mariadb --dbname=$MYSQL_DATABASE --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --url=$DOMAIN_NAME
-fi
-
-service php7.4-fpm stop
 
 exec "$@"

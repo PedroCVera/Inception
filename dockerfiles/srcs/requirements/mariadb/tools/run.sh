@@ -1,22 +1,22 @@
-SETUP='/init.sql'
+#!/bin/bash
 
-# Check if database `mysql` has already been created
-if [ ! -d "/var/lib/mysql/mysql" ]; then
+if [ ! -d "/var/lib/mysql/$DB_NAME" ]; then
 
-    # Initialize the MySQL database tables and create the necessary files in the
-    # specified data directory with the specified MySQL user and based directory.
-    echo "Install mariadb for the first time"
-    mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+service mysql start;
 
+sleep 3;
+
+
+echo "Creating admin user"
+mysql -u root -e "CREATE DATABASE $DB_NAME;"
+mysql -u root -e "CREATE USER '$DB_ADMIN'@'%' IDENTIFIED BY '$DB_PASS';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_ADMIN'@'%';"
+mysql -u root -e "FLUSH PRIVILEGES;"
+
+echo "Setting password for root user"
+mysqladmin -u root password "$DB_PASS"
+
+mysqladmin -u root -p"$DB_PASS" shutdown
 fi
 
-# Populate configuration file with env variables
-echo "Setup initial file with env variables"
-cat  envsubst > ${SETUP}
-
-# Execute the daemon as the "mysql" user, using the specified data directory,
-# port, and initial file, and passes all arguments ($@) to it
-# sudo chown -R mysql:mysql /var/lib/mysql/wordpress
-
-echo "Start mysql daemon to receive arguments"
-exec mysqld --user=mysql --datadir="/var/lib/mysql" --port=3306 --init-file ${SETUP} $@
+exec mysqld_safe --bind-address=0.0.0.0

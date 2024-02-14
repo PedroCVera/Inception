@@ -1,72 +1,68 @@
-version: '3'
+version: '3.8'
 
 services:
-  nginx:
-    hostname: pcoimbra.42.fr
-    container_name: pcoimbra_nginx
-    build:
-      context: ./requirements/nginx
-      dockerfile: Dockerfile
+  nginx-server:
+    build: ./requirements/nginx
+    image: nginx-server
+    container_name: nginx-server
+    ports:
+      - 443:443
     depends_on:
-      - wordpress
-    image: nginx
-    restart: always
+      - wordpress-site
     volumes:
       - wp:/var/www/html
-    env_file:
-      - /home/inception/Documents/.env
-    ports:
-      - "443:443"
     networks:
       - inception
+    restart: on-failure
 
-  wordpress:
-    container_name: pcoimbra_wordpress
-    build:
-      context: ./requirements/wordpress
-      dockerfile: Dockerfile
-    image: wordpress
-    restart: always
-    volumes:
-      - wp:/var/www/html
+  mariadb-data:
+    build: ./requirements/mariadb
+    image: mariadb-data
+    container_name: mariadb-data
     env_file:
       - /home/inception/Documents/.env
-    networks:
-      - inception  
-
-  mariadb:
-    container_name: pcoimbra_mariadb
-    build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-    image: mariadb
-    expose:
-      - 3306
-    restart: always
     volumes:
       - db:/var/lib/mysql
-    env_file:
-      - /home/inception/Documents/.env
     networks:
       - inception
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--silent"]
+      interval: 5s
+      timeout: 30s
+      retries: 10
+      start_period: 5s
+  
+  wordpress-site:
+    build: ./requirements/wordpress
+    image: wordpress-site
+    container_name: wordpress-site
+    env_file:
+      - /home/inception/Documents/.env
+    depends_on:
+      mariadb-data:
+        condition: service_healthy
+    volumes:
+      - wp:/var/www/html
+    networks:
+      - inception
+    restart: on-failure
+
+
+volumes:
+  db:
+    name: db
+    driver_opts:
+      type: none
+      device: /home/inception/data/mysql
+      o: bind
+  wp:
+    name: wp
+    driver_opts:
+      type: none
+      device: /home/inception/data/wordpress
+      o: bind
 
 networks:
   inception:
-    driver: bridge
-
-volumes:
-  wp:
-    name: wp
-    driver: local
-    driver_opts:
-      device: /home/inception/data
-      o: bind
-      type: none
-    
-  db:
-    name: db
-    driver: local
-    driver_opts:
-      device: /home/inception/data
-      o: bind
-      type: none
+    name: inception

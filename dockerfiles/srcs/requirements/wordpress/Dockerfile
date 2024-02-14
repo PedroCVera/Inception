@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y vim 
 
-COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+#COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 COPY tools/wp-entrypoint.sh /opt/wp-entrypoint.sh
 

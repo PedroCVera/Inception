@@ -14,8 +14,6 @@ RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        -keyout /etc/nginx/ssl/pcoimbra.key \
        -subj "/C=PT/ST=Lisboa/L=Lisboa/O=42Lisboa/OU=pcoimbra/CN=localhost/"
 
-COPY ./conf/nginx.conf /etc/nginx/conf.d/
-
-EXPOSE 443
+COPY ./conf/nginx-def.conf /etc/nginx/conf.d/
 
 CMD ["nginx", "-g", "daemon off;"]
