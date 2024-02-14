@@ -1,5 +1,5 @@
 DOCKER_COMPOSE := docker-compose -f srcs/docker-compose.yml
-NGINX_DOCKERFILE := nginx/Dockerfile
+NGINX_DOCKERFILE := srcs/requirements/nginx/Dockerfile
 
 build:
 	${DOCKER_COMPOSE} build

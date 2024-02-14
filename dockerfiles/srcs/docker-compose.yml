@@ -5,10 +5,10 @@ services:
     hostname: pcoimbra.42.fr
     container_name: pcoimbra_nginx
     build:
-      context: ./srcs/requirements/nginx
+      context: ./requirements/nginx
       dockerfile: Dockerfile
     depends_on:
-      - ./srcs/requirements/wordpress
+      - wordpress
     image: nginx
     restart: always
     volumes:
@@ -23,7 +23,7 @@ services:
   wordpress:
     container_name: pcoimbra_wordpress
     build:
-      context: ./srcs/requirements/wordpress
+      context: ./requirements/wordpress
       dockerfile: Dockerfile
     image: wordpress
     restart: always
@@ -37,7 +37,7 @@ services:
   mariadb:
     container_name: pcoimbra_mariadb
     build:
-      context: ./srcs/requirements/mariadb
+      context: ./requirements/mariadb
       dockerfile: Dockerfile
     image: mariadb
     expose:
@@ -46,7 +46,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     env_file:
-      - ./srcs/.env
+      - .env
     networks:
       - inception
 
