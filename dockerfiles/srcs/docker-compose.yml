@@ -14,7 +14,7 @@ services:
     volumes:
       - wp:/var/www/html
     env_file:
-      - .env
+      - /home/inception/Documents/.env
     ports:
       - "443:443"
     networks:
@@ -30,7 +30,7 @@ services:
     volumes:
       - wp:/var/www/html
     env_file:
-      - .env
+      - /home/inception/Documents/.env
     networks:
       - inception  
 
@@ -46,7 +46,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     env_file:
-      - .env
+      - /home/inception/Documents/.env
     networks:
       - inception
 
