@@ -1,25 +1,20 @@
+# base image
 FROM debian:11
 
-RUN apt-get update && \
-    apt-get -y install \
-        gettext-base \
-        mariadb-server \
-	mariadb-client \
-        procps \
-        vim
-RUN mkdir -p /var/run/mysqld \
-  && chown -R mysql:mysql /var/run/mysqld
+# install mariadb server
+RUN apt-get update && apt-get install -y mariadb-server
 
-#COPY ./conf/my.cnf /my.cnf.tmpl
+# expose default mariadb port
+EXPOSE 3306
 
-#RUN chmod 744 /my.cnf.tmpl
+RUN mysql_install_db
 
-#RUN mv /my.cnf.tmpl /etc/mysql/my.cnf
+# copy entrypoint script to a different location
+COPY conf/entrypoint.sh /usr/local/bin/
 
-COPY ./tools/run.sh /run.sh
+# grant execute permission to the entrypoint script
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-RUN chmod +x /run.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-VOLUME [ "/sys/fs/cgroup" ]
-
-ENTRYPOINT [ "bash", "/run.sh" ]
+CMD ["mysqld_safe", "--bind-address=0.0.0.0"]

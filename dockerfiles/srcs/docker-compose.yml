@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   nginx-server:
@@ -6,7 +6,7 @@ services:
     image: nginx-server
     container_name: nginx-server
     ports:
-      - 443:443
+      - "443:443"
     depends_on:
       - wordpress-site
     volumes:
@@ -16,23 +16,16 @@ services:
     restart: on-failure
 
   mariadb-data:
-    build: ./requirements/mariadb
-    image: mariadb-data
     container_name: mariadb-data
-    env_file:
-      - /home/inception/Documents/.env
+    build: ./requirements/mariadb
+    restart: always
+    image: mariadb-data
     volumes:
       - db:/var/lib/mysql
+    env_file: /home/inception/Documents/.env
     networks:
       - inception
-    restart: on-failure
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--silent"]
-      interval: 5s
-      timeout: 30s
-      retries: 10
-      start_period: 5s
-  
+
   wordpress-site:
     build: ./requirements/wordpress
     image: wordpress-site
@@ -40,24 +33,22 @@ services:
     env_file:
       - /home/inception/Documents/.env
     depends_on:
-      mariadb-data:
-        condition: service_healthy
+      - mariadb-data
     volumes:
       - wp:/var/www/html
     networks:
       - inception
     restart: on-failure
 
-
 volumes:
   db:
-    name: db
+    driver: local
     driver_opts:
       type: none
       device: /home/inception/data/mysql
       o: bind
   wp:
-    name: wp
+    driver: local
     driver_opts:
       type: none
       device: /home/inception/data/wordpress
@@ -65,4 +56,5 @@ volumes:
 
 networks:
   inception:
-    name: inception
+    driver: bridge
+      #bridge is  anetwork driver that allows every container attached to the same network to communicate w each other
