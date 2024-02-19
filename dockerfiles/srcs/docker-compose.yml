@@ -18,13 +18,16 @@ services:
   mariadb-data:
     container_name: mariadb-data
     build: ./requirements/mariadb
-    restart: always
+    restart: on-failure
     image: mariadb-data
     volumes:
       - db:/var/lib/mysql
-    env_file: /home/inception/Documents/.env
+    env_file: 
+      - /home/inception/Documents/.env
     networks:
       - inception
+    expose:
+      - 3306
 
   wordpress-site:
     build: ./requirements/wordpress
@@ -39,11 +42,13 @@ services:
     networks:
       - inception
     restart: on-failure
+    expose:
+      - 9000
 
 volumes:
   db:
-    driver: local
-    driver_opts:
+    driver: local # Specifies that the volume will be managed by the local driver
+    driver_opts: # Indicates that the volume will not be managed by a specific volume driver type.
       type: none
       device: /home/inception/data/mysql
       o: bind
@@ -54,7 +59,14 @@ volumes:
       device: /home/inception/data/wordpress
       o: bind
 
+# A bind mount allows the user to link a specific directory or file on the host machine to a directory inside the container
+      # Any changes made to the files or directories within the bind-mounted path on the host are immediately reflected
+      # inside the container and vice versa
+      # This is particularly usefull for scenarios where the user wants to manage data outside of the container
+      #and maintain it even when the container is not running.
+
 networks:
   inception:
-    driver: bridge
+    name: inception
+    # driver: bridge
       #bridge is  anetwork driver that allows every container attached to the same network to communicate w each other

@@ -10,4 +10,10 @@ up:
 down:
 	${DOCKER_COMPOSE} down
 
+prune:
+	docker system prune -a
+
+logs:
+	docker compose -f srcs/docker-compose.yml logs
+
 PHONY: build up down

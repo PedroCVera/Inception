@@ -1,20 +1,16 @@
-# base image
 FROM debian:11
 
-# install mariadb server
-RUN apt-get update && apt-get install -y mariadb-server
+RUN apt update \
+   && apt install -y mariadb-server
 
-# copy entrypoint script to a different location
-COPY conf/entrypoint.sh /usr/local/bin/
+COPY ./conf/mariadb_configs.sh /home
 
-# grant execute permission to the entrypoint script
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /home/mariadb_configs.sh
 
 RUN mysql_install_db
 
-# expose default mariadb port
 EXPOSE 3306
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/home/mariadb_configs.sh"]
 
 CMD ["mysqld_safe", "--bind-address=0.0.0.0"]

@@ -1,9 +1,8 @@
-#!/bin/sh
-echo "hALOOOOOOOOOOOOOOOOOOOOOOO"
+#!/bin/bash
 
 if [ ! -d "/var/lib/mysql/$DB_NAME" ]; then
 
-service mysql start
+service mariadb start
 
 sleep 1
 
@@ -18,8 +17,9 @@ Y
 Y
 END
 
+    sleep 1
     mysql -u root -e "CREATE DATABASE $DB_NAME;"
-    mysql -u root -e "CREATE USER '$DB_USER'@'%' IDENTIFIED by '$DB_PASS';"
+    mysql -u root -e "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';"
     mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'%';"
     mysql -u root -e "FLUSH PRIVILEGES;"
 
@@ -29,8 +29,9 @@ END
 
 else
     sleep 1
+    echo "Database is already configured"
 fi
 
-echo "Done"
+echo "Database is ready to use."
 
 exec "$@"
