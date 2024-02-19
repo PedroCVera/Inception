@@ -6,17 +6,20 @@
 FROM debian:11
 
 #install dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    unzip \
-    php7.4 \
-    php7.4-fpm \
-    php7.4-mysql \
-    php7.4-curl \
-    php7.4-gd \
-    php7.4-xml \
-    php7.4-mbstring
+RUN apt update && apt install -y \
+    curl               \
+    php7.4             \
+    php7.4-fpm         \
+    php7.4-mysql       \
+    php7.4-curl        \
+    php7.4-gd          \
+    php7.4-mbstring    \
+    php7.4-xml         \
+    php7.4-xmlrpc      \
+    php7.4-soap        \
+    php7.4-intl        \
+    php7.4-zip         \
+    mariadb-client
 
 #install wordpress
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar &&\

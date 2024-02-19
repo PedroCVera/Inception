@@ -1,13 +1,15 @@
-FROM debian:buster
+FROM debian:11
 
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y install nginx && apt-get -y install openssl
+RUN apt-get update\
+    && apt-get install -y nginx openssl\
+    && mkdir -p /var/www/ /etc/nginx/ssl/
 
-RUN mkdir /etc/nginx/ssl/
+RUN mkdir -p /run/nginx
 
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 -keyout /etc/nginx/ssl/nginx-selfsigned.key \
 -out /etc/nginx/ssl/nginx-selfsigned.crt \
--subj "/C=PT/L=Lisbon/O=42/OU=student/CN=pcoimbra.42.fr"
+-subj "/C=PT/ST=Lisboa/L=Lisboa/O=42Lisboa/OU=pcoimbra/CN=pcoimbra/"
 
 COPY ./conf/nginx-def.conf /etc/nginx/conf.d
 
