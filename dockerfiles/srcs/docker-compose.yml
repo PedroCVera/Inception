@@ -23,7 +23,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     env_file: 
-      - /home/inception/Documents/.env
+      - .env
     networks:
       - inception
     expose:
@@ -34,7 +34,7 @@ services:
     image: wordpress-site
     container_name: wordpress-site
     env_file:
-      - /home/inception/Documents/.env
+      - .env
     depends_on:
       - mariadb-data
     volumes:

@@ -11,7 +11,10 @@ down:
 	${DOCKER_COMPOSE} down
 
 prune:
+	docker volume rm srcs_db srcs_wp
 	docker system prune -a
+	rm -rf /home/inception/data/mysql /home/inception/data/wordpress
+	mkdir /home/inception/data/mysql /home/inception/data/wordpress
 
 logs:
 	docker compose -f srcs/docker-compose.yml logs
