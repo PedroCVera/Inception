@@ -10,9 +10,9 @@ if [ ! -e "/var/www/html/wp-config.php" ]; then
 	echo "[Wordpress startup 4] Creating wp-config.php"
 	wp config create --dbname=${DB_NAME} --path=/var/www/html/ --dbuser=${DB_USER} --dbpass=${DB_PASS} --dbhost=${DB_HOST} --allow-root
 	echo "[Wordpress startup 5] Installing WordPress core"
-	wp core install --url=${DOMAIN_NAME} --title=${WP_TITLE} --admin_user=${WP_ADMIN_USER} --admin_password=${WP_ADMIN_PASS} --admin_email=${WP_ADMIN_EMAIL} --allow-root
+	wp core install --url=${DOMAIN_NAME} --title=${WP_TITLE} --admin_user=${WP_ADMIN} --admin_password=${WP_ADMIN_PASS} --admin_email=${WP_ADMIN_EMAIL} --allow-root
 	echo "[Wordpress startup 6] Creating WordPress default user"
-	wp user create ${WP_USER} ${WP_EMAIL} --user_pass=${WP_USER_PASS} --role=author --display_name=${DB_USER} --porcelain --allow-root
+	wp user create "${WP_USER}" "${WP_USER_EMAIL}" --user_pass="${WP_USER_PASS}" --role=author --display_name="${DB_USER}" --allow-root
 	echo "[Wordpress startup 7] Installing WordPress theme"
 	wp theme install bravada --activate --allow-root
 	wp theme status bravada --allow-root
